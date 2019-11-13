@@ -22,63 +22,58 @@ defmodule GameTest do
   test "state isn't changed for :won or :lost game" do
     for state <- [:won, :lost] do       # use "<-" not "in"
         game = Game.new_game() |> Map.put(:game_state, state)
-        assert {^game, _} = Game.make_move(game, "x")
+        assert ^game = Game.make_move(game, "x")
     end
   end
 
   test "first occurence of letter is not :already_used. " do
-    {game, _tally} = Game.new_game() |> Game.make_move("x")
+    game = Game.new_game() |> Game.make_move("x")
     assert game.game_state != :already_used
   end
 
   test "occurence of letter is :already_used. " do
-    {game, _tally} = Game.new_game() |> Game.make_move("x")
+    game = Game.new_game() |> Game.make_move("x")
     assert game.game_state != :already_used
-    {game, _tally} = Game.make_move(game, "x")
+    game = Game.make_move(game, "x")
     assert game.game_state == :already_used
   end
 
   test "a good guess is recognized" do
-    {game, _tally} = Game.new_game("wibble") |> Game.make_move("w")
+    game = Game.new_game("wibble") |> Game.make_move("w")
     assert game.game_state == :good_guess
   end
 
   test "a good guess wins game" do
     game = Game.new_game("wibble")
-    Enum.reduce(game.letters, game, fn (x, acc) ->
-        {new_game, _} = Game.make_move(acc, x)
-        new_game
-        end)
-    |> Map.fetch(:game_state)
-    |> assert == :won
-
+    end_game = Enum.reduce(game.letters, game, fn (x, acc) -> Game.make_move(acc, x) end)
+    assert end_game.game_state == :won
 
     # OLD VERSION OF TEST WITHOUT REDUCE
     # game = Game.new_game("wibble")
-    # {game, _tally} = Game.make_move(game, "w")
-    # {game, _tally} = Game.make_move(game, "i")
-    # {game, _tally} = Game.make_move(game, "b")
-    # {game, _tally} = Game.make_move(game, "l")
-    # {game, _tally} = Game.make_move(game, "e")
+    # game = Game.make_move(game, "w")
+    # game = Game.make_move(game, "i")
+    # game = Game.make_move(game, "b")
+    # game = Game.make_move(game, "l")
+    # game = Game.make_move(game, "e")
     # assert game.game_state == :won
 
   end
 
   test "bad guess is recognized" do
-    {game, _tally} = Game.new_game("wibble") |> Game.make_move("z")
+    game = Game.new_game("wibble") |> Game.make_move("z")
     assert game.game_state == :bad_guess
     assert game.turns_left == 6
   end
 
   test "bad guess ends game" do
     game = Game.new_game("w")
-    {game, _tally} = Game.make_move(game, "a")
-    {game, _tally} = Game.make_move(game, "b")
-    {game, _tally} = Game.make_move(game, "c")
-    {game, _tally} = Game.make_move(game, "d")
-    {game, _tally} = Game.make_move(game, "e")
-    {game, _tally} = Game.make_move(game, "f")
-    {game, _tally} = Game.make_move(game, "g")
+    game = Game.make_move(game, "a")
+    game = Game.make_move(game, "b")
+    game = Game.make_move(game, "c")
+    game = Game.make_move(game, "d")
+    game = Game.make_move(game, "e")
+    game = Game.make_move(game, "f")
+    game = Game.make_move(game, "g")
     assert game.game_state == :lost
   end
 end
