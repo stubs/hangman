@@ -4,7 +4,7 @@ defmodule Hangman.Game do
         turns_left: 7,
         game_state: :initializing,
         letters: [],
-        used: MapSet.new(),
+        used: MapSet.new()
         # list_used: []
     )
 
@@ -43,7 +43,8 @@ defmodule Hangman.Game do
         %{
             game_state: game.game_state,
             turns_left: game.turns_left,
-            letters:    reveal_guessed(game.letters, game.used)
+            letters:    reveal_guessed(game.letters, game.used),
+            used:       game.used
         }
     end
 
@@ -55,7 +56,7 @@ defmodule Hangman.Game do
     end
 
     defp reveal_letter(letter, _is_in_word=true),   do: letter
-    defp reveal_letter(letter, _is_not_in_word),    do: "_"
+    defp reveal_letter(_letter, _is_not_in_word),    do: "_"
 
     defp accept_move(game, _guess, _already_guessed=true) do
         Map.put(game, :game_state, :already_used)
